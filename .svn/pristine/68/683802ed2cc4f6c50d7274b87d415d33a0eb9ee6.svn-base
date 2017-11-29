@@ -1,0 +1,46 @@
+header{
+		position: absolute;
+		width: 100%;
+		height: 12%;
+		background-color: #2984A4;
+		top: 0;
+		left: 0;
+}
+header div h1 {
+	float: left;
+	width: 20%;
+	top:50px;
+	color: white;
+	position: absolute;
+}
+
+header div ul {
+	position: relative;
+	margin-left: 60%;
+	margin-top: 20px;
+}
+
+header div ul li {
+	list-style: none;
+	float: left;
+	margin-left: 2%;
+	color: white;
+}
+ul li a {
+	text-decoration: none;
+	color: white;
+	font-size:20px;
+}
+
+aside {
+	position: absolute;
+	width: 100%;
+	height: 90%;
+	left: 0;
+	top: 12%;
+	background-color: white;
+}
+#simpletree{
+background-color:white;
+height:96%;
+}

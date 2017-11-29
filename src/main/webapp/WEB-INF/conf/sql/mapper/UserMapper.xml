@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace配置别名 -->
+<mapper namespace="com.gft.dao.impl">
+	<!-- 查询语句用于用户登陆验证 -->
+	<select id="queryUser" resultType="com.gft.entity.User">
+		<![CDATA[
+			select user_name as name,user_password as password from user where user_name=#{name}
+		]]>
+	</select>
+	<!-- 根据用户id删除用户 -->
+	<delete id="deleteUser" parameterType="com.gft.entity.Temp">
+	 <!--  delete from user where user_id =#{id} -->
+    <![CDATA[
+    delete ur,u from user_role ur ,user u where ur.user_id=u.user_id and u.user_id=#{id}
+    ]]>
+	</delete>
+	<!-- 增加用户 -->
+	<update id="addUser" parameterType="com.gft.entity.Temp">
+    <![CDATA[
+    insert into user values(#{array[0]},#{array[1]},#{array[2]},#{array[3]},#{array[4]},#{array[5]},#{array[6]},#{array[7]})
+    ]]>
+	</update>
+	<!-- 根据用户user_id修改用户 -->
+	<update id="updateUser" parameterType="com.gft.entity.Temp">
+    <![CDATA[
+    update user set user_name=#{array[0]},user_password=#{array[1]},user_tel=#{array[2]},user_email=#{array[3]},user_adress=#{array[4]},user_date=#{array[5]},user_state=#{array[6]} where user_id=#{array[7]}
+    ]]>
+	</update>
+	<!-- 根据用户名查询用户 -->
+	<select id="queryUserbyID" parameterType="com.gft.entity.Temp" resultType="Integer">
+		<![CDATA[
+			select count(*) from user where user_name=#{name}
+		]]>
+	</select>
+	<!-- 为用户添加角色 -->
+	<insert id="updateURole1" parameterType="com.gft.entity.vo">
+	insert into user_role(user_id,role_id) values(#{array[0]},#{array[1]});
+	</insert>
+</mapper>

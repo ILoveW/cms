@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace配置别名 -->
+<mapper namespace="com.gft.dao.RoleMapperimpl">
+	<select id="getCount1" resultType="Long">
+		<![CDATA[
+			select count(*) from role
+		]]>
+	</select>
+	<!-- limit #{page},#{rows} -->
+	<select id="easyfenye1" resultType="com.gft.entity.Role">
+      <![CDATA[
+		 select * from role where 1=1
+         	]]>
+		<if test="id !=null and id!='' ">
+		<!-- and role_id = #{id} -->
+		<![CDATA[
+		 and role_id like concat('%',#{id},'%')
+		]]>
+			</if>
+			 <if test="name !=null and name!='' ">
+			 <!-- and role_name = #{name} -->
+		<![CDATA[
+		 and role_name like concat('%',#{name},'%')  
+		]]>
+			</if>
+			<if test="bewrite !=null and bewrite!='' ">
+			<!-- and role_bewrite = #{bewrite} -->
+		<![CDATA[
+		 and role_bewrite like concat('%',#{bewrite},'%') 
+		]]>
+			</if>  
+		 <![CDATA[
+		limit #{page},#{rows}
+		]]> 
+	</select>
+	<!-- 添加角色 -->
+	<insert id="addRole" parameterType="com.gft.entity.Role">
+	insert into role values(#{array[0]},#{array[1]},#{array[2]})
+	</insert>
+	<!-- 修改角色 -->
+	<update id="updateRole" parameterType="com.gft.entity.Role">
+	update role set role_name=#{array[0]},role_bewrite=#{array[1]} where role_id=#{array[2]}
+	</update>
+	<!-- 删除角色 -->
+	<delete id="deleteRole" parameterType="com.gft.entity.Role">
+	delete from role where role_id=#{id}
+	</delete>
+	<!-- URole用户角色 -->
+	
+	<select id="urgetCount" resultType="Long">
+		<![CDATA[
+			select count(*) from user u LEFT JOIN user_role ur on u.user_id=ur.user_id left JOIN role r on ur.role_id=r.role_id
+		]]>
+	</select>
+	<!-- limit #{page},#{rows} -->
+	<select id="urfenye" resultType="com.gft.entity.vo">
+      <![CDATA[
+		 select u.user_id as user_id,u.user_name as user_name,r.role_name as role_name,r.role_bewrite as role_bewrite from user u LEFT JOIN user_role ur on u.user_id=ur.user_id left JOIN role r on ur.role_id=r.role_id where 1=1
+         	]]>
+		<if test="uname !=null and uname!='' ">
+		<!-- and role_id = #{id} -->
+		<![CDATA[
+		 and u.user_name like concat('%',#{uname},'%')
+		]]>
+			</if>
+			 <if test="name !=null and name!='' ">
+			 <!-- and role_name = #{name} -->
+		<![CDATA[
+		 and r.role_name like concat('%',#{name},'%')  
+		]]>
+			</if>
+			<if test="bewrite !=null and bewrite!='' ">
+			<!-- and role_bewrite = #{bewrite} -->
+		<![CDATA[
+		 and r.role_bewrite like concat('%',#{bewrite},'%') 
+		]]>
+			</if>  
+		 <![CDATA[
+		limit #{page},#{rows}
+		]]> 
+	</select>
+	<!-- 根据用户编号查询用户 -->
+	<select id="queryUserbyID" parameterType="com.gft.entity.Temp" resultType="Integer">
+	select count(*) from user_role where  user_id=#{id}
+	</select>
+	<!-- 修改用户角色 -->
+	<update id="updateURole" parameterType="com.gft.entity.vo">
+	update user_role set role_id=#{array[0]} where user_id=#{array[1]}
+	</update>
+	<!-- 为用户添加角色 -->
+	<insert id="updateURole1" parameterType="com.gft.entity.vo">
+	insert into user_role where user_id=#{array[0]},role_id=#{array[1]}
+	</insert>
+	</mapper>

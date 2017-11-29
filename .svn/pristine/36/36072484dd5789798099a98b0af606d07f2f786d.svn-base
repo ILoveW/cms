@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace配置别名 -->
+<mapper namespace="com.gft.dao.impl">
+	<!-- 统计条数 -->
+	<select id="getCount" resultType="Long">
+	<![CDATA[
+		select count(*) from user
+		]]>
+		<!-- <if test="name !=null and name!='' "> <![CDATA[ where user_name=#{name} 
+			]]> </if> -->
+	</select>
+	<!-- 分页 -->
+	<!-- select * from user limit #{page},#{rows} -->
+	<!-- select * from user where user_name = #{name} limit #{page},#{rows} -->
+	<select id="easyfenye" resultType="com.gft.entity.Temp">
+      <![CDATA[
+		
+		 select user_id,user_name,user_password,user_tel,user_email,user_adress,user_date,case user_state when '1' THEN '启用' when '0' then '未启用' END user_state from user where 1=1
+         	]]>
+		<!-- <if test="name !=null and name!='' "> <![CDATA[ where user_name = 
+			#{name} ]]> </if> -->
+		<!-- <where>
+			<if test="name !=null and name!='' ">
+		<![CDATA[
+		 user_name = #{name}
+		]]>
+			</if>
+			 <if test="tel !=null and name!='' ">
+		<![CDATA[
+		 user_telphone = #{tel}
+		]]>
+			</if>
+			<if test="email !=null and name!='' ">
+		<![CDATA[
+		 user_email = #{email}
+		]]>
+			</if> 
+		</where> -->
+			<if test="name !=null and name!='' ">
+			<!-- and user_name = #{name} -->
+		<![CDATA[
+		and user_name like concat('%',#{name},'%')
+		]]>
+			</if>
+			 <if test="tel !=null and tel!='' ">
+		<![CDATA[
+		and user_tel like concat('%',#{tel},'%') 
+		]]>
+			</if>
+			<if test="email !=null and email!='' ">
+		<![CDATA[
+		and user_email like concat('%',#{email},'%')  
+		]]>
+			</if> 
+		<![CDATA[
+		limit #{page},#{rows}
+		]]>
+	</select>
+</mapper>

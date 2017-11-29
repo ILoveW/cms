@@ -1,0 +1,114 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	<link rel="stylesheet" href="/BS/static/css/normalize.css" />
+	<link rel="stylesheet" href="/BS/static/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="/BS/static/jquery-easyui-1.5.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/BS/static/jquery-easyui-1.5.3/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="/BS/static/css/demos.css">
+	<script type="text/javascript" src="/BS/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/BS/static/js/jquery.easyui.min.js"></script>
+	<style type="text/css">
+			body{
+				background-image: url("/BS/static/Images/t3.png");
+				background-color:azure;
+			}
+			input{
+				
+			}
+			.container{
+				background-color:rgba(10, 150, 50, 0.13);
+			}
+		</style>
+	
+<body>
+	<div  style="width:400px;padding:30px 60px;margin-top: 8%;margin-left:30%">
+		<div class="container " style="width:400px;padding:30px 60px;">
+	<section>
+	<form id="ffff">
+		<!-- <div class="register-box">
+		<th>用户编号:</th>
+			<input maxlength="20"  style="margin-bottom: 5px;" name="user_id" class="easyui-validatebox textbox" data-options="required:true"  type="text" placeholder="用户ID">
+		</div> -->
+		<div class="register-box">
+		<th>用户名称:</th>
+				<input name="user_name" style="margin-bottom: 5px;" class="easyui-validatebox textbox" data-options="prompt:'Enter User Name.',required:true,validType:'length[3,10]'" placeholder="用 户 名">
+		</div>
+		<div class="register-box">
+		<th>用户密码:</th>
+			<input maxlength="20" style="margin-bottom: 5px;" class="easyui-validatebox textbox" data-options="required:true"  name="user_password" type="password" placeholder="建议至少使用两种字符组合">
+		</div>
+		<div class="register-box">
+		<th>用户邮箱:</th>
+			<input maxlength="20"  style="margin-bottom: 5px;" class="easyui-validatebox textbox" data-options="required:true"  name="user_email" type="email" placeholder="请输入正确的邮箱">
+		</div>
+		<div class="register-box">
+		<th>用户电话:</th>
+			<input  class="easyui-validatebox textbox" style="margin-bottom: 5px;" data-options="required:true"  name="user_tel" maxlength="20" type="text" placeholder="建议使用常用手机">
+		</div>	
+		<div class="register-box">
+		<th>用户地址:</th>
+			<input maxlength="20" class="easyui-validatebox textbox" style="margin-bottom: 5px;" data-options="required:true"  name="user_adress" type="text" placeholder="请输入地址">
+		</div>
+		<div class="register-box">
+		<!-- <th>用户状态:</th>
+			<input maxlength="20"  style="margin-bottom: 5px;" name="user_state" class="easyui-validatebox textbox" data-options="required:true"  type="text" placeholder="用户状态"> -->
+			<tr><th>状态：</td><th><input type="radio" disabled="disabled" name="user_state1"  name="u_status" value="1"><span>启用</span>
+          			<input type="radio" name="user_state1" checked value="0"><span>不启用 </span></td></tr>
+			
+		</div>
+		<div class="submit_btn">
+					<button type="button" id="btn">立 即 注 册</button>
+					<!-- <button type="button" id="btn1">éåº</button> -->
+					<a href="/BS/BS/logindemo"><font style="font-size:15px;">退出</font> </a>
+				</div>
+	</form>
+	</div>
+</section>
+</div>
+</div>
+ </body>
+ <script type="text/javascript">
+$(document).ready(function(){
+$("#btn").on("click",function zhuce(){
+	var radio = document.getElementsByName("user_state1");  
+    for (i=0; i<radio.length; i++) {  
+        if (radio[i].checked) { 
+        var user_state=radio[i].value; 
+        }  
+    }
+	$.ajax({
+		 cache: true,
+         type: "POST",
+         url:"/BS/BS/addUser",
+        /*  data:$('#ffff').serialize(), */
+		data:{"user_name":$("input[name='user_name']").val(),"user_password":$("input[name='user_password']").val(),"user_email":$("input[name='user_email']").val(),"user_tel":$("input[name='user_tel']").val(),"user_adress":$("input[name='user_adress']").val(),"user_state":user_state},
+        //data:{"id":id,"name":name,"password":password,"email":email,"telphone":telphone,"Address":Address},
+         async: false,
+         error: function(request) {
+             alert("Connection error");
+         },
+         success: function(data) {
+        	 if (data.code == 200) {
+					alert("添加成功");
+				} else if (data.code == 250) {
+					alert("添加失败");
+				} else if (data.code == 210) {
+					alert("该用户已存在");
+				} else {
+					alert("出现异常");
+				}
+         }
+			});
+		});
+	/* 	$("#btn1").on("click",function fahui(){
+			window.document.location.href("/lanqiao8161/Login.html");
+		}); */
+		});
+	</script>
+</html>
+
+

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace配置别名 -->
+<mapper namespace="com.gft.dao.MenuMapperimpl">
+	<select id="getCount2" resultType="Long">
+		<![CDATA[
+			select count(*) from menu
+		]]>
+	</select>
+	<!-- limit #{page},#{rows} -->
+	<select id="easyfenye2" resultType="com.gft.entity.Menu">
+      <![CDATA[
+		 select * from menu where 1=1
+         	]]>
+		<if test="name !=null and name!='' ">
+		<![CDATA[
+		 and menu_name like concat('%',#{name},'%')  
+		]]>
+		</if>
+		<if test="url !=null and url!='' ">
+		<![CDATA[
+		 and menu_url like concat('%',#{url},'%') 
+		]]>
+		</if>  
+		 <![CDATA[
+		limit #{page},#{rows}
+		]]>
+	</select>
+	<!-- 添加角色 -->
+	<insert id="addMenu" parameterType="com.gft.entity.Menu">
+		insert into menu values(#{array[0]},#{array[1]},#{array[2]},#{array[3]})
+	</insert>
+	<!-- 修改角色 -->
+	<update id="updateMenu" parameterType="com.gft.entity.Menu">
+		update menu set
+		menu_name=#{array[0]},menu_fid=#{array[1]},menu_url=#{array[2]} where
+		menu_id=#{array[3]}
+	</update>
+	<!-- 删除角色 -->
+	<delete id="deleteMenu" parameterType="com.gft.entity.Menu">
+		delete from menu where menu_id=#{id}
+	</delete>
+
+	<select id="rmgetCount" resultType="Long">
+		<![CDATA[
+			select count(*) from role r left JOIN role_menu rm on r.role_id=rm.role_id LEFT JOIN menu m on rm.menu_id=m.menu_id
+		]]>
+	</select>
+	<!-- limit #{page},#{rows} -->
+	<select id="rmfenye" resultType="com.gft.entity.vo">
+      <![CDATA[
+		 select r.role_id as role_id,r.role_name as role_name,m.menu_id as menu_id,m.menu_name as menu_name,m.menu_fid as menu_fid,m.menu_url as menu_url from role r left JOIN role_menu rm on r.role_id=rm.role_id LEFT JOIN menu m on rm.menu_id=m.menu_id where 1=1
+         	
+         	]]>
+		<if test="role_name !=null and role_name!='' ">
+		<![CDATA[
+		 and r.role_name like concat('%',#{role_name},'%') 
+		]]>
+		</if>
+		<if test="name !=null and name!='' ">
+		<![CDATA[
+		 and m.menu_name like concat('%',#{name},'%')  
+		]]>
+		</if>
+		<if test="url !=null and url!='' ">
+		<![CDATA[
+		 and m.menu_url like concat('%',#{url},'%') 
+		]]>
+		</if>  
+		 <![CDATA[
+		ORDER BY r.role_name limit #{page},#{rows}
+		]]>
+	</select>
+	<!-- 创建角色菜单 -->
+	<insert id="insertRMenu" parameterType="com.gft.entity.vo">
+		insert into role_menu(role_id,menu_id) values(#{array[0]},#{array[1]})
+	</insert>
+	<!-- 查询角色菜单表中是否存在改用户 -->
+	<!-- 更新角色菜单 -->
+	<delete id="updateRMenu" parameterType="com.gft.entity.vo">
+		<!-- update role_menu set role_id=#{array[0]},menu_id=#{array[1]} where 
+			role_id -->
+		delete from role_menu where role_id=#{role_id}
+	</delete>
+</mapper>

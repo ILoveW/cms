@@ -1,0 +1,162 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<link href="/BS/static/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/BS/static/jquery-easyui-1.5.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="/BS/static/jquery-easyui-1.5.3/themes/icon.css">
+<script type="text/javascript" src="/BS/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/BS/static/js/jquery.easyui.min.js"></script>
+</head>
+<body>
+角色名称:<input class="easyui-textbox" data-options="prompt:'Enter a name'" id="search" style="width: 12%; height: 30px"> 
+	菜单名称:<input class="easyui-textbox" data-options="prompt:'Enter a name'" id="searchname" style="width: 12%; height: 30px"> 
+	菜单地址:<input class="easyui-textbox" data-options="prompt:'Enter a descrition'" id="searcheurl" style="width: 12%; height: 30px">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width: 80px" onclick="searchUser()">Search</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="update()">修改</a>
+<table id="dg" title="菜单管理" style="width: 100%; height: 350px"
+		data-options="rownumbers:true,singleSelect:true,pagination:true,url:'/BS/menu/Pages3',method:'get',fitColumns:'true',striped:true">
+		<thead>
+			<tr>
+				<th data-options="field:'select',width:100,checkbox:true">Select</th>
+				<th data-options="field:'role_id',width:120">角色编号</th>
+				<th data-options="field:'role_name',width:120">角色名称</th>
+				<th data-options="field:'menu_id',width:120">菜单编号</th>
+				<th data-options="field:'menu_name',width:120">菜单名称</th>
+				<th data-options="field:'menu_fid',width:120">菜单父编号</th>
+				<th data-options="field:'menu_url',width:120,align:'right'">权限地址</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="dlg" class="easyui-dialog" title="Basic Dialog" closed="true"
+		data-options="iconCls:'icon-save'" style="width: 400px; height: 400px; padding: 10px;">
+		<div class="easyui-panel" title="New Topic" style="width: 400px;">
+			<div style="padding: 10px 60px 20px 60px">
+				<form id="ff" method="post">
+					<table cellpadding="5">
+					<tr>
+							<td>角色编号:</td>
+							<td><input class="easyui-textbox" id="text1" name="role_id" readonly="readonly" value="id"></input></td>
+						</tr>
+						<tr>
+							<td>角色名称:</td>
+							<td><input class="easyui-textbox" id="text2" name="role_name" readonly="readonly" value="id"></input></td>
+						</tr>
+						</div> 
+					</table	>
+					 <div style="width:100%">
+						<input type="checkbox" name="check" id="check"   value="1" />用户管理
+						<input type="checkbox" name="check"    value="2" />用户查询
+						<input type="checkbox" name="check" id="check"   value="3" />添加用户
+						<input type="checkbox" name="check"    value="4" />修改用户
+						<input type="checkbox" name="check" id="check"   value="5" />删除用户
+						<input type="checkbox" name="check"   value="6" />日志管理
+						<input type="checkbox" name="check" id="check"   value="7" />查看日志
+						<input type="checkbox" name="check"    value="8" />角色管理
+						<input type="checkbox" name="check" id="check"   value="9" />菜单管理
+						<input type="checkbox" name="check"   value="10" />菜单查询
+				</form>
+				<div style="text-align: center; padding: 5px">
+					<a href="javascript:void(0)" class="easyui-linkbutton"
+						onclick="submit()">Submit</a> <a href="javascript:void(0)"
+						class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+<script type="text/javascript">
+/* $("#btn5").click(function(){//输出选中的值 
+	var obj=document.getElementsByName('check'); //选择所有name="'test'"的对象，返回数组 
+	//取到对象数组后，我们来循环检测它是不是被选中 
+	var s=''; 
+	for(var i=0; i<obj.length; i++){ 
+	if(obj[i].checked) s+=obj[i].value+','; //如果选中，将value添加到变量s中 
+	} 
+	//那么现在来检测s的值就知道选中的复选框的值了 
+	alert(s==''?'你还没有选择任何内容！':s); 
+	});  */
+/*加载datagrid数据*/
+$(function() {
+	var pager = $('#dg').datagrid().datagrid('getPager');// get the pager of datagrid
+	pager.pagination({
+
+	});
+});
+/*修改菜单 */
+function update() {
+	var row = $('#dg').datagrid('getSelected');
+
+	if (row) {
+		$("#text1").textbox("setValue", row.role_id);
+		$("#text2").textbox("setValue", row.role_name);
+	}
+	$('#dlg').window('open');
+}
+function submit() {
+	var obj=document.getElementsByName('check'); //选择所有name="'test'"的对象，返回数组 
+	//取到对象数组后，我们来循环检测它是不是被选中 
+	var s=''; 
+	for(var i=0; i<obj.length; i++){ 
+	if(obj[i].checked) s+=obj[i].value+','; //如果选中，将value添加到变量s中 
+	} 
+	if(s==''){
+		alert("你还没有选择任何内容！");
+	}else{	 
+	var role_id = $("#text1").val();
+	var role_name = $("#text2").val();
+	$.ajax({
+		cache : true,
+		type : "POST",
+		url : "/BS/menu/updateRMenu",
+		//data:{"id":id,"name":name,"password":password,"email":email,"telphone":telphone,"Address":Address},
+		async : false,
+		/* data : $('#ff').serialize(), */ // 你的formid
+		data:{"role_id":role_id,"role_name":role_name,"menu_id":s},
+		async : false,
+		error : function(request) {
+			alert("Connection error");
+		},
+		success : function(data) {
+			if (data.code == 200) {
+				alert("修改成功");
+				window.location.reload();
+			} else if (data.code == 250) {
+				alert("修改失败");
+			} else {
+				alert("出现异常");
+			}
+		}
+	});
+	window.location.reload();
+	}
+}
+
+function searchUser() {
+	$("#dg").datagrid('load', {
+		role_name : $("#search").val(),
+		menu_name : $("#searchname").val(),
+		menu_url : $("#searcheurl").val()
+	})
+}
+
+/*初始化分页数据*/
+$(document).ready(function() {
+	$.ajax({
+		url : "/BS/menu/Pages3",
+		type : "get",
+		data : {
+			page : "1",
+			rows : "10"
+		},
+		dataType : "json",
+		success : function(data) {
+		}
+	});
+});
+</script>
+</html>

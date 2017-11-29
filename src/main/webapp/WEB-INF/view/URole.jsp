@@ -1,0 +1,149 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<link href="/BS/static/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/BS/static/jquery-easyui-1.5.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="/BS/static/jquery-easyui-1.5.3/themes/icon.css">
+<script type="text/javascript" src="/BS/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/BS/static/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/BS/static/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+	用户名:
+	<input class="easyui-textbox" data-options="prompt:'Enter a id'" id="search" style="width: 12%; height: 30px"> 
+	角色名称:
+	<input class="easyui-textbox" data-options="prompt:'Enter a name'" id="searchname" style="width: 12%; height: 30px"> 
+	角色描述:
+	<input class="easyui-textbox" data-options="prompt:'Enter a descrition'" id="searchebewrite"
+		style="width: 12%; height: 30px">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width: 80px" onclick="searchUser()">Search</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="update()">修改</a>
+<table id="dg" title="用户角色管理" style="width: 100%; height: 350px"
+		data-options="rownumbers:true,singleSelect:false,pagination:true,url:'/BS/role/Pages2',method:'get',fitColumns:'true',striped:true">
+		<thead>
+			<tr>
+				<th data-options="field:'select',width:100,checkbox:true">Select</th>
+				<th data-options="field:'user_id',width:120">用户编号</th>
+				<th data-options="field:'user_name',width:120">用户名称</th>
+				<th data-options="field:'role_name',width:120">角色名称</th>
+				<th data-options="field:'role_bewrite',width:120,align:'right'">角色描述</th>
+			</tr>
+		</thead>
+	</table>
+	
+	<div id="dlg" class="easyui-dialog" title="Basic Dialog" closed="true"
+		data-options="iconCls:'icon-save'" style="width: 400px; height: 400px; padding: 10px;">
+		<div class="easyui-panel" title="New Topic" style="width: 400px;">
+			<div style="padding: 10px 60px 20px 60px">
+				<form id="ff" method="post">
+					<table cellpadding="5">
+						<tr>
+							<td>用户编号:</td>
+							<td><input class="easyui-textbox" id="text1" name="user_id" readonly="readonly" value="id"></input></td>
+						</tr>
+						<tr>
+							<td>用户名称:</td>
+							<td><input class="easyui-textbox" id="text2" name="user_name" readonly="readonly" value="id"></input></td>
+						</tr>
+					<tr>
+					<th>角色：</th><td>
+					<!-- <input type="radio" name="user_state1"  name="u_status" value="1"><span>超级管理员</span>
+          			<input type="radio" name="user_state1" checked value="2"><span>管理员 </span>
+ -->     
+					 <!-- <select id="pid"  onchange="gradeChange()">   -->
+					 <select id="pid" >  
+					  <option value="1">超级管理员</option>  
+					  <option value="2" selected="selected">管理员</option>  
+					  <option value="3" >普通用户</option>  
+					</select>      			
+					 </td></tr>
+					</table>
+				</form>
+				<div style="text-align: center; padding: 5px">
+					<a href="javascript:void(0)" class="easyui-linkbutton"
+						onclick="submit()">Submit</a> <a href="javascript:void(0)"
+						class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+/* function gradeChange(){
+    var objS = document.getElementById("pid");
+    var grade = objS.options[objS.selectedIndex].value;
+   } */
+/*加载datagrid数据*/
+$(function() {
+	var pager = $('#dg').datagrid().datagrid('getPager');// get the pager of datagrid
+	pager.pagination({
+
+	});
+});
+function update() {
+	var row = $('#dg').datagrid('getSelected');
+
+	if (row) {
+		$("#text1").textbox("setValue", row.user_id);
+		$("#text2").textbox("setValue", row.user_name);
+	}
+	$('#dlg').window('open');
+}
+function submit() {
+	var user_id = $("#text1").val();
+	var user_name = $("#text2").val();
+	var objS = document.getElementById("pid");
+	var role_id = objS.options[objS.selectedIndex].value;
+	$.ajax({
+		cache : true,
+		type : "POST",
+		url : "/BS/role/updateURole",
+		async : false,
+		/* data : $('#ff').serialize(), */ // 你的formid
+		data:{"user_id":user_id,"user_name":user_name,"role_id":role_id},
+		async : false,
+		error : function(request) {
+			alert("Connection error");
+		},
+		success : function(data) {
+			if (data.code == 200) {
+				alert("修改成功");
+				window.location.reload();
+			} else if (data.code == 250) {
+				alert("修改失败");
+			} else if(data.code==1501){
+				alert("没有当前用户");
+			}else{
+				alert("异常");
+			}
+		}
+	});
+	window.location.reload();
+}
+function searchUser() {
+	$("#dg").datagrid('load', {
+		uname : $("#search").val(),
+		role_name : $("#searchname").val(),
+		role_bewrite : $("#searchebewrite").val()
+	})
+}
+/*初始化分页数据*/
+$(document).ready(function() {
+	$.ajax({
+		url : "/BS/role/Pages2",
+		type : "get",
+		data : {
+			page : "1",
+			rows : "10"
+		},
+		dataType : "json",
+		success : function(data) {
+		}
+	});
+});
+</script>
+</html>

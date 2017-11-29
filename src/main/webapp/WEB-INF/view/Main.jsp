@@ -1,0 +1,173 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/BS/static/css/style.css" />
+<link rel="stylesheet" type="text/css" href="/BS/static/jquery-easyui-1.5.3/themes/default/easyui.css">
+<script type="text/javascript" src="/BS/static/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/BS/static/js/jquery.easyui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/BS/static/css/demos.css">
+<link rel="stylesheet" type="text/css" href="/BS/static/css/tree/zTreeStyle.css">
+<script type="text/javascript" src="/BS/static/js/tree/jquery.ztree.core-3.5.min.js"></script>
+<script type="text/javascript" src="/BS/static/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript"> 
+function ConvertToTreeGridJson(rows, idFieldName, pidFieldName, fileds) {
+	 function exists(rows, ParentId) {
+		for(var i = 0; i < rows.length; i++) {
+			if(rows[i][idFieldName] == ParentId)
+				return true;
+		}
+		return false;
+	}
+	var nodes = [];
+	// get the top level nodes
+	for(var i = 0; i < rows.length; i++) {
+		var row = rows[i];
+		if(!exists(rows, row[pidFieldName])) {
+			var data = {
+				id: row[idFieldName]
+			}
+			var arrFiled = fileds.split(",");
+			for(var j = 0; j < arrFiled.length; j++) {
+				if(arrFiled[j] != idFieldName)
+					data[arrFiled[j]] = row[arrFiled[j]];
+			}
+			nodes.push(data);
+		}
+	}
+	console.info;
+	(JSON.stringify(nodes));
+
+	var toDo = [];
+	for(var i = 0; i < nodes.length; i++) {
+		toDo.push(nodes[i]);
+	}
+
+	while(toDo.length) {
+		var node = toDo.shift(); // the parent node
+		// get the children nodes
+		for(var i = 0; i < rows.length; i++) {
+			var row = rows[i];
+			if(row[pidFieldName] == node.id
+
+			) {
+				var child = {
+					id: row[idFieldName]
+				};
+				var arrFiled = fileds.split(",");
+				for(var j = 0; j < arrFiled.length; j++) {
+					if(arrFiled[j] != idFieldName) {
+						child[arrFiled[j]] = row[arrFiled[j]];
+					}
+				}
+				if(node.children) {
+					node.children.push(child);
+				} else {
+					node.children = [child];
+				}
+				toDo.push(child);
+			}
+		}
+	}
+	return nodes;
+};
+    $(function(){  
+    	$.ajax({
+    		 url:"/BS/BS/tree",
+    		 type:"get",
+    		 data:{},
+    		 dataType:"json",
+    		 success:function(datas){
+    			dataJsonObj=datas;
+    			var fileds = "id,name,text";
+    			//获取已转为符合treegrid的json的对象
+    			var nodes = ConvertToTreeGridJson(dataJsonObj, "id", "fid", fileds);
+    			  var setting = {  
+    		                data : {  
+    		                    simpleData : {  
+    		                        enable : true //启用简单数据格式,其他参数可参照api自行设定（其实这样就行了）  
+    		                    }  
+    		                },  
+    		                callback : {  
+    		                    onClick : function(event,treeId,treeNode,clickFlag){  //treeNode代表节点数据，可参照ztree中的api  
+    		                    	if(treeNode.click==false){   //click为false不可以进行点击  
+    		                            return ;  
+    		                        }  
+    		                    if(treeNode.name!="用户管理"&&treeNode.name!="日志管理"){
+    		                        //在tabs选项卡添加一个新的选项卡  
+    		                        if($('#mytabs').tabs('exists',treeNode.name)){ //treeNode.name对应数据zNodes中的name  
+    		                           
+    		                        	//如果存在选项卡，切换到该选项卡中  
+    		                            $('#mytabs').tabs('select',treeNode.name);  
+    		                        }else{  
+    		                            //如果不存在选项卡，添加新的选项卡  
+    		                            $('#mytabs').tabs('add',{  
+    		                                title : treeNode.name,  
+    		                                content : '<div style="width:100%;height:100%;overflow:hidden;">'  
+    		                                    + '<iframe src="'  
+    		                                    + treeNode.text  
+    		                                    + '" scrolling="auto" style="width:100%;height:100%;border:0;" ></iframe></div>', // 可以局部刷新tab选项卡  
+    		                                closable : true //提供关闭选项卡的按钮                                    
+    		                            });                  
+    		                        }  
+    		                    }
+    		                    }                      
+    		                }                  
+    		        };
+    			//$("#divResult").html(JSON.stringify(nodes));
+    			 var zTreeObj;
+    			   // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+    			   var zNodes =nodes;
+    			   
+    			   $(document).ready(function(){
+    			     /*  $.fn.zTree.init($("#treeDemo"), setting, zNodes); */
+    			      $.fn.zTree.init($('#simpletree'),setting,zNodes);
+    			   });
+    		 }	
+    	});
+    });  
+</script>
+</head>
+<body class="easyui-layout">
+	<!-- <div region="north" style="height:50px;" >北部</div> -->
+	<header>
+		<div>
+			<h1>BSDEMO</h1>
+			<ul>
+				<li><a href="/BS/BS/queryuserbyId" target="manframe">查询个人信息</a></li>
+				<li>|</li>
+				<li><a href="/BS/BS/alteruserbyId" target="manframe">修改个人信息</a></li>
+				<li>|</li>
+				<li><a href="/BS/BS/queryUser" target="manframe">修改密码</a></li>
+				<li>|</li>
+				<li><a href="/BS/BS/logout">退出系统</a></li>
+			</ul>
+		</div>
+	</header>
+	<aside class="easyui-layout">
+		<div data-options="region:'center'">
+			<!-- 这是一个选项卡布局 -->
+			<div id="mytabs" class="easyui-tabs" data-options="fit:true">
+				<!-- 每一个div 就是一个选项卡 -->
+				<div data-options="title:'About',iconCls:'icon-ok'">
+					<iframe name="manframe" src="/BS/BS/about" scrolling="no"
+						width="100%" height="100%"></iframe>
+				</div>
+			</div>
+
+		</div>
+		<div data-options="region:'west',title:'管理系统'" style="width: 200px;">
+			<!-- 折叠面板 -->
+			<div class="easyui-accordion" data-options="fit:true">
+				<!-- 每个div都是一个面板 -->
+				<div data-options="title:'BSDEMO'">
+					<!-- 制作简单数据树 -->
+					<ul class="ztree" id="simpletree"></ul>
+				</div>
+			</div>
+		</div>
+	</aside>
+</body>
+
+</html>

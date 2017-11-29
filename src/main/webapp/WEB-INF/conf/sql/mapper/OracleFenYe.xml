@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace配置别名 -->
+<mapper namespace="com.gft.dao.impl">
+	<!-- 分页 -->
+	<select id="FenyeTest" resultType="com.gft.entity.Test">
+		<![CDATA[
+			select sms_address as smsaddress,report_date as reportdate,report_type as reporttype,money_amount as moneyamount,send_amount as sendamount from (select a.*,rownum rn from (select * from account_day_tbl ) a) b where b.rn>#{page} and b.rn<=#{rows}
+		]]>
+	</select>
+	<!-- 统计条数 -->
+	<select id="FenyeTitle" resultType="long">
+		<![CDATA[
+			select count(*) from account_day_tbl 
+		]]>
+	</select>
+
+</mapper>

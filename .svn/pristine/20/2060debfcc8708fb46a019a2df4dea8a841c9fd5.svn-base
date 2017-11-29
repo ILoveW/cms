@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gft.dao.impl">
+	<!-- 获取所有栏目生成一棵树 -->
+	<select id="leafTree" resultType="com.gft.entity.leafTree">
+		<![CDATA[
+		select m.menu_id as id ,m.menu_name as name,n.menu_id as fid,m.menu_url as text from (select * from menu where menu_id in(select menu_id from role_menu where role_id=(select role_id from user_role where user_id=(select user_id from user where user_name=#{name})))) m left join menu n on m.menu_fid=n.menu_id;
+		]]>
+	</select>
+
+</mapper>
